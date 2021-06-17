@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script>
+        function show() {
+            //1.创建xhr异步对象
+            var xhr = new XMLHttpRequest();
+            //4.打开监听，接收响应
+            xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        var r = xhr.responseText;
+                        var arr = JSON.parse(r);
+                        //结构字符串--------1.表头
+                        var html = "";
+
+                        for (var item of arr) {
+
+                            html += `
+								<tr>
+								  <td>${item.uid}</td>
+								  <td>${item.uname}</td>
+								  <td>${item.email}</td>
+								  <td>
+										<a href="search.html?uid=${item.uid}&email=${item.email}">修改</a>
+										<a href="javascript:;" onclick=delete3(${item.uid})>删除</a>
+									</td>
+								</tr>
+							`;
+                            //console.log(arr[i].uid);
+                        }
+                        //结构字符串--------3.表结束
+                        var d1 = document.getElementById("data");
+                        d1.innerHTML = html;
+                    }
+                }
+                //2.打开连接，创建请求
+            xhr.open("get", "/pro/v1/list", true);
+            //3.发送请求
+            xhr.send();
+        }
+
+        function delete3(_uid) { //不能使用用户手动填写uid
+            //0.获取用户填入的信息
+            //var _uid=uid.value;
+            var rs = confirm("是否删除数据?");
+            if (!rs) {
+                return;
+            }
+            //1.创建xhr异步对象
+            var xhr = new XMLHttpRequest();
+            //4.接收响应
+            xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        var r = xhr.responseText;
+                        if (r == "1") {
+                            alert("删除成功！！！");
+                            show();
+                        } else {
+                            alert("删除是失败");
+                        }
+                    }
+                }
+                //2.创建请求
+            xhr.open("delete", `/pro/v1/delUser?uid=${_uid}`, true);
+            //3.发送请求
+            xhr.send();
+        }
+    </script>
+</head>
+
+<body onload="show()">
+    <h1>用户列表</h1>
+
+    <div id="d1">
+        <table border="1" width="80%" cellspacing="0">
+            <thead>
+                <tr>
+                    <td>编号</td>
+                    <td>用户名</td>
+                    <td>邮件</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody id="data">
+
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
